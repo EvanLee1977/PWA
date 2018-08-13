@@ -1,0 +1,14 @@
+{
+    "short_name": "IMC",
+    "name": "BBA Innovation Management Council",
+    "icons": [
+        {
+            "src": "logo1.png",
+            "type": "image/png",
+            "sizes": "144x144"
+        }
+    ],
+    "background_color": "#2196f3",
+    "display": "standalone",
+    "start_url": "index.html"
+}
