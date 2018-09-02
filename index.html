@@ -1,74 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+    <title>cordova-plugin-ImagePicker Demo</title>
 </head>
+
 <body>
-<script type="text/javascript">
-    var result = document.getElementById("result");
-    var file = document.getElementById("file");
 
-    //判断浏览器是否支持FileReader接口
-    if (typeof FileReader == 'undefined') {
-        result.InnerHTML = "<p>你的浏览器不支持FileReader接口！</p>";
-        //使选择控件不可操作
-        file.setAttribute("disabled", "disabled");
-    }
+    <button id="btn1">选择图片(最大1920*1440)</button>
+    <button id="btn2">选择图片(自动宽高)</button>
 
-    function readAsDataURL() {
-        //检验是否为图像文件
-        var file = document.getElementById("file").files[0];
-        if (!/image\/\w+/.test(file.type)) {
-            alert("看清楚，这个需要图片！");
-            return false;
-        }
-        var reader = new FileReader();
-        alert('file:'+JSON.stringify(file));
-        //将文件以Data URL形式读入页面
-        reader.readAsDataURL(file);
-       alert('reader:'+JSON.stringify(reader));
+    <div id="img_list"></div>
 
-        reader.onload = function (e) {
-            var result = document.getElementById("result");
-            //显示文件
-            result.innerHTML = '<img src="' + this.result + '" alt="" />';
-        }
-    }
 
-    function readAsBinaryString() {
-        var file = document.getElementById("file").files[0];
-        var reader = new FileReader();
-        //将文件以二进制形式读入页面
-        reader.readAsBinaryString(file);
-
-        reader.onload = function (f) {
-            var result = document.getElementById("result");
-            //显示文件
-            result.innerHTML = this.result;
-        }
-    }
-
-    function readAsText() {
-        var file = document.getElementById("file").files[0];
-        var reader = new FileReader();
-        //将文件以文本形式读入页面
-        reader.readAsText(file);
-
-        reader.onload = function (f) {
-            var result = document.getElementById("result");
-            //显示文件
-            result.innerHTML = this.result;
-        }
-    }
-</script>
-<p>
-    <label>请选择一个文件：</label>
-    <input type="file" id="file"/>
-    <input type="button" value="读取图像" onclick="readAsDataURL()"/>
-    <input type="button" value="读取二进制数据" onclick="readAsBinaryString()"/>
-    <input type="button" value="读取文本文件" onclick="readAsText()"/>
-</p>
-<div id="result" name="result"></div>
+    <script type="application/javascript">
+        var Demo = {
+            // Application Constructor
+            initialize: function () {
+                document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+            },
+            // deviceready Event Handler
+            //
+            // Bind any cordova events here. Common events are:
+            // 'pause', 'resume', etc.
+            onDeviceReady: function () {
+                document.getElementById('btn1').onclick = Demo.getImage1;
+                document.getElementById('btn2').onclick = Demo.getImage2;
+            },
+            getImage1: function () {
+                ImagePicker.getPictures(function (result) {
+                    Demo.showImage(result);
+                }, function (err) {
+                    alert(err);
+                }, {
+                    maximumImagesCount: 9,
+                    width: 1920,
+                    height: 1440,
+                    quality: 100
+                });
+            },
+            getImage2: function () {
+                ImagePicker.getPictures(function (result) {
+                    Demo.showImage(result);
+                }, function (err) {
+                    alert(err);
+                }, {
+                    maximumImagesCount: 9,
+                    width: -1,
+                    height: -1,
+                    quality: 100
+                });
+            },
+            showImage: function (result) {
+                var list = result.images;
+                var imgContainer = document.getElementById("img_list");
+                imgContainer.innerHTML = "";
+                for (var i = 0; i < list.length; i++) {
+                    var x = list[i];
+                    (function (x) {
+                        var div = document.createElement("div");
+                        // 选图插件返回的宽高、体积
+                        var node = document.createElement('p');
+                        node.innerHTML = x.path + "<br>resultWidth: " + x.width + ", resultHeight: " +
+                            x.height + ', size: ' + x.size;
+                        div.appendChild(node);
+                        // 创建对象
+                        var img = new Image();
+                        img.onload = function () {
+                            // 实际宽高
+                            var node = document.createElement('p');
+                            node.innerHTML = "naturalWidth: " + img.naturalWidth + ", naturalHeight: " +
+                                img.naturalHeight;
+                            div.appendChild(node);
+                        };
+                        img.src = x.path + '?' + new Date().getTime();
+                        img.width = 200;
+                        div.appendChild(img);
+                        imgContainer.appendChild(div);
+                    })(x)
+                }
+            }
+        };
+        Demo.initialize();
+    </script>
+    <script type="text/javascript" src="cordova.js"></script>
 </body>
+
 </html>
