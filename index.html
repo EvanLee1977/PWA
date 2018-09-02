@@ -24,8 +24,10 @@
             return false;
         }
         var reader = new FileReader();
+        console.log('file:'+JSON.stringify(file));
         //将文件以Data URL形式读入页面
         reader.readAsDataURL(file);
+        console.log('reader:'+JSON.stringify(reader));
 
         reader.onload = function (e) {
             var result = document.getElementById("result");
